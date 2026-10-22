@@ -7,7 +7,10 @@ import WidgetKit
 struct TrackerLiveActivity: Widget {
 	let tint = Color(red: 0.33, green: 0.69, blue: 1.0)
 	
-	func playButtonTint(playing: Bool) -> Color? { playing ? tint : .blue }
+	func timerTint(playing: Bool) -> Color { playing ? tint : .secondary }
+	func playImageIcon(playing: Bool) -> String { playing ? "pause.fill" : "play.fill" }
+	func playImageTint(playing: Bool) -> Color { playing ? tint : .blue }
+	func playButtonTint(playing: Bool) -> Color? { playing ? tint : .secondary }
 	
 	var body: some WidgetConfiguration {
         ActivityConfiguration(for: TrackerAttributes.self) { context in
@@ -19,7 +22,7 @@ struct TrackerLiveActivity: Widget {
 						SharedViews.Timer(initialTime: context.state.time, playingDate: context.state.playingDate)
 							.font(.system(size: 17))
 							.fontWeight(Font.Weight.bold)
-							.foregroundStyle(tint)
+							.foregroundStyle(timerTint(playing: context.state.playing))
 					}
 					.fixedSize(horizontal: true, vertical: true)
 					.frame(maxWidth: 80, maxHeight: .infinity, alignment: .center)
@@ -52,16 +55,16 @@ struct TrackerLiveActivity: Widget {
 				.padding(EdgeInsets(top: context.state.projectName != nil ? 8 : 0, leading: 0, bottom: 0, trailing: 0))
 				.frame(maxWidth: .infinity, maxHeight: .infinity)
 				Button(intent: PlaybackIntent(id: context.attributes.id.uuidString)) {
-					let image = !(context.state.playing) ? "play.fill" : "pause.fill"
-					Image(systemName: image)
+					Image(systemName: playImageIcon(playing: context.state.playing))
 						.imageScale(.medium)
+						.foregroundStyle(playImageTint(playing: context.state.playing))
 						.frame(width: 24, height: 24)
 				}
 				.buttonStyle(.bordered)
 				.controlSize(.regular)
 				.buttonBorderShape(.circle)
 				.tint(playButtonTint(playing: context.state.playing))
-				.frame(maxHeight: .infinity, alignment: .center)
+				.frame(maxWidth: 80, maxHeight: .infinity, alignment: .trailing)
 			}
 			.padding(16)
             .activityBackgroundTint(Color.black)
@@ -75,7 +78,7 @@ struct TrackerLiveActivity: Widget {
 							SharedViews.Timer(initialTime: context.state.time, playingDate: context.state.playingDate)
 								.font(.system(size: 17))
 								.fontWeight(Font.Weight.bold)
-								.foregroundStyle(tint)
+								.foregroundStyle(timerTint(playing: context.state.playing))
 						}
 						.fixedSize(horizontal: true, vertical: true)
 						.frame(maxWidth: 80, maxHeight: .infinity, alignment: .center)
@@ -84,9 +87,9 @@ struct TrackerLiveActivity: Widget {
 					HStack(alignment: .center) {
 						Spacer()
 						Button(intent: PlaybackIntent(id: context.attributes.id.uuidString)) {
-							let image = !(context.state.playing) ? "play.fill" : "pause.fill"
-							Image(systemName: image)
+							Image(systemName: playImageIcon(playing: context.state.playing))
 								.imageScale(.medium)
+								.foregroundStyle(playImageTint(playing: context.state.playing))
 								.frame(width: 24, height: 24)
 						}
 						.buttonStyle(.bordered)
@@ -98,7 +101,7 @@ struct TrackerLiveActivity: Widget {
 					.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                 }
                 DynamicIslandExpandedRegion(.center) {
-					VStack(alignment: .leading) {
+					VStack(alignment: .center) {
 						Text(context.state.title)
 							.lineLimit(1)
 							.truncationMode(.tail)
@@ -137,7 +140,7 @@ struct TrackerLiveActivity: Widget {
 					.hidden()
 					.overlay(alignment: .leading) {
 						SharedViews.Timer(initialTime: context.state.time, playingDate: context.state.playingDate)
-							.foregroundStyle(tint)
+							.foregroundStyle(timerTint(playing: context.state.playing))
 					}
             } compactTrailing: {
 				Text("00:00:00")
