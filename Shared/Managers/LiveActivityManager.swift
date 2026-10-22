@@ -24,6 +24,9 @@ public final class LiveActivityManager {
 			), alertConfiguration: nil)
 		} else if !forceUpdate {
 			do {
+				if !activities.isEmpty {
+					await stopAll()
+				}
 				let attributes = TrackerAttributes(id: task.id)
 			 
 				let activity = try Activity.request(
@@ -40,6 +43,22 @@ public final class LiveActivityManager {
 				
 				print(errorMessage)
 			}
+		}
+	}
+	
+	public func stopAll() async {
+		guard ActivityAuthorizationInfo().areActivitiesEnabled else {
+			return
+		}
+		
+		let activities = Activity<TrackerAttributes>.activities
+		
+		for activity in activities {
+			let state = TrackerAttributes.ContentState(task: TaskModel())
+			let dismissalPolicy = ActivityUIDismissalPolicy.after(.now)
+			await activity.end(ActivityContent<Activity<TrackerAttributes>.ContentState>(
+				state: state, staleDate: nil
+			), dismissalPolicy: dismissalPolicy)
 		}
 	}
 	
