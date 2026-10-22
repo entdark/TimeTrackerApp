@@ -12,6 +12,8 @@ public final class TaskModel: Equatable {
 	public var creationDate: Date
 	@Attribute(.unique) public var id: UUID
 	
+	public var playing: Bool { playingDate != nil }
+	
 	public static func ==(lhs: borrowing TaskModel, rhs: borrowing TaskModel) -> Bool {
 		return lhs.id == rhs.id
 	}
@@ -36,8 +38,6 @@ public final class TaskModel: Equatable {
 		self.creationDate = creationDate
 		self.id = id
 	}
-	
-	public var playing: Bool { playingDate != nil }
 	
 	public func play() {
 		if playingDate == nil {
